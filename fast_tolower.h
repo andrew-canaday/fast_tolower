@@ -87,7 +87,7 @@
  *      c2 = c ^ mask;
  *
  * Once we have this information, we can cast the input and output character
- * arrays to a suitably large integer type and interate in strides the size
+ * arrays to a suitably large integer type and iterate in strides the size
  * of the integer type, instead of byte-by-byte.
  *
  * Many strings will end up not being neatly divisible by our maximum stride.
