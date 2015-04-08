@@ -183,10 +183,10 @@ static void fast_tolower( char* dst, const char* src, size_t len)
         case 5: FAST_CHAR_TOLOWER(dst, src) 
         case 4: FAST_CHAR_TOLOWER(dst, src) 
     #endif /* FAST_TOLOWER_STRIDE == 8 */ 
-    #if FAST_TOLOWER_STRIDE >= 6 
+    #if FAST_TOLOWER_STRIDE >= 4 
         case 3: FAST_CHAR_TOLOWER(dst, src) 
         case 2: FAST_CHAR_TOLOWER(dst, src) 
-    #endif /* FAST_TOLOWER_STRIDE >= 6 */ 
+    #endif /* FAST_TOLOWER_STRIDE >= 4 */ 
         case 1: FAST_CHAR_TOLOWER(dst, src) 
         case 0: 
         default: 
@@ -213,10 +213,10 @@ static void fast_tolower( char* dst, const char* src, size_t len)
         case 5: FAST_CHAR_TOLOWER(dst, src) 
         case 4: FAST_CHAR_TOLOWER(dst, src) 
     #endif /* FAST_TOLOWER_STRIDE == 8 */ 
-    #if FAST_TOLOWER_STRIDE >= 6 
+    #if FAST_TOLOWER_STRIDE >= 4 
         case 3: FAST_CHAR_TOLOWER(dst, src) 
         case 2: FAST_CHAR_TOLOWER(dst, src) 
-    #endif /* FAST_TOLOWER_STRIDE >= 6 */ 
+    #endif /* FAST_TOLOWER_STRIDE >= 4 */ 
         case 1: FAST_CHAR_TOLOWER(dst, src) 
         case 0: 
         default: 
