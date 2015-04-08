@@ -1,5 +1,5 @@
 # Simple makefile for fast_tolower algorithm test.
-benchmark_tolower: main.c
+benchmark_tolower: main.c fast_tolower.h
 	gcc ./main.c -o benchmark_tolower
 
 benchmark: benchmark_tolower
