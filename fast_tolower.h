@@ -134,7 +134,7 @@
 /* Otherwise, use __SIZE_TYPE__ if we have GCC: */
 #define FAST_TOLOWER_STRIDE __SIZE_TYPE__
 #else
-/* Otherwise, use the most-likely guess (x86_64): */
+/* Otherwise, use the safest guess (32bit): */
 #warning "Unable to determine architecture! FAST_TOLOWER_STRIDE = 4 (default)."
 #define FAST_TOLOWER_STRIDE 4
 #endif /* __GNUC__ */
