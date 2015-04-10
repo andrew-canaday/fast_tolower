@@ -16,6 +16,10 @@
 /* The fast version is CHUNKY and live separately from the benchmark here: */
 #include "fast_tolower.h"
 
+#ifndef DEFAULT_NO_ITERATIONS
+#define DEFAULT_NO_ITERATIONS 250000
+#endif /* DEFAULT_NO_ITERATIONS */
+
 #ifndef BUFF_SIZE
 #define BUFF_SIZE 512
 #endif /* BUFF_SIZE */
@@ -68,19 +72,24 @@ size_t randomize(char* buffer, size_t len)
 int main( int argc, char** argv )
 {
     int i;
-    int no_iter = 100000;
+    int no_iter = DEFAULT_NO_ITERATIONS;
     char buffer[BUFF_SIZE];
     size_t len;
+    struct timeval benchmark_time;
 
     if( argc > 1 ) {
         no_iter = atoi(argv[1]);
     };
 
+    puts("\nRunning test with:");
+    printf("\tMax string length: %i\n", BUFF_SIZE);
+    printf("\tNumber of iterations: %i\n", no_iter);
+
     /* Get some random stuff: */
     srand(time(NULL));
 
     /* fast_tolower: */
-    puts("Timing fast tolower...");
+    printf("%s", "Timing fast tolower...");
     benchmark_start();
     for( i=0; i<no_iter; ++i )
     {
@@ -89,10 +98,12 @@ int main( int argc, char** argv )
         benchmark_unpause();
         fast_tolower(buffer, buffer, len);
     };
-    benchmark_stop();
+    benchmark_time = benchmark_stop();
+    printf("%lu.%06lus\n",
+        (long)benchmark_time.tv_sec, (long)benchmark_time.tv_usec);
   
     /* slicker_tolower: */
-    puts("Timing slicker tolower...");
+    printf("%s", "Timing slicker tolower...");
     benchmark_start();
     for( i=0; i<no_iter; ++i )
     {
@@ -101,10 +112,12 @@ int main( int argc, char** argv )
         benchmark_unpause();
         slicker_tolower(buffer, buffer, len);
     };
-    benchmark_stop();
+    benchmark_time = benchmark_stop();
+    printf("%lu.%06lus\n",
+        (long)benchmark_time.tv_sec, (long)benchmark_time.tv_usec);
 
     /* naive_tolower: */
-    puts("Timing naive tolower...");
+    printf("%s", "Timing naive tolower...");
     benchmark_start();
     for( i=0; i<no_iter; ++i )
     {
@@ -113,7 +126,10 @@ int main( int argc, char** argv )
         benchmark_unpause();
         naive_tolower(buffer, buffer, len);
     };
-    benchmark_stop();
+    benchmark_time = benchmark_stop();
+    printf("%lu.%06lus\n",
+        (long)benchmark_time.tv_sec, (long)benchmark_time.tv_usec);
+
     return 0;
 };
 
