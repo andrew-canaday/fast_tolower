@@ -11,6 +11,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <ctype.h>
+#include "benchmark.h"
 
 /* The fast version is CHUNKY and live separately from the benchmark here: */
 #include "fast_tolower.h"
@@ -50,48 +51,6 @@ static void slicker_tolower( char* dst, const char* src, size_t len)
     return;
 };
 
-/*========================================*
- *==- Ugly timing stuff for profiling: -==*
- *========================================*/
-
-/* The timeing stuff was all stolen, ALMOST VERBATIM, from:
- * http://stackoverflow.com/questions/16764276/measuring-time-in-millisecond-precision
- */
-static struct timeval tm1;
-static struct timeval pausetime;
-
-/* Start timing an algorithm: */
-static inline void start()
-{
-    gettimeofday(&tm1, NULL);
-}
-
-/* Pause the timer, don't count any time elapsed between pause and unpause: */
-static inline void pause()
-{
-    gettimeofday(&pausetime, NULL);
-}
-
-/* Unpause the timer: */
-static inline void unpause()
-{
-    struct timeval tm2;
-    gettimeofday(&tm2, NULL);
-    tm1.tv_usec += (tm2.tv_usec - pausetime.tv_usec);
-    tm1.tv_sec += (tm2.tv_sec - pausetime.tv_sec);
-};
-
-/* Stop the timer and spit out the total elapsed time: */
-static inline void stop()
-{
-    struct timeval tm2;
-    gettimeofday(&tm2, NULL);
-
-    unsigned long long t = 1000 * (tm2.tv_sec - tm1.tv_sec) + \
-                            (tm2.tv_usec - tm1.tv_usec) / 1000;
-    fprintf(stderr, "%llu ms\n", t);
-}
-
 /* Used to generate a random character string: */
 size_t randomize(char* buffer, size_t len)
 {
@@ -122,39 +81,39 @@ int main( int argc, char** argv )
 
     /* fast_tolower: */
     puts("Timing fast tolower...");
-    start();
+    benchmark_start();
     for( i=0; i<no_iter; ++i )
     {
-        pause();
+        benchmark_pause();
         len = randomize(buffer, BUFF_SIZE);
-        unpause();
+        benchmark_unpause();
         fast_tolower(buffer, buffer, len);
     };
-    stop();
+    benchmark_stop();
   
     /* slicker_tolower: */
     puts("Timing slicker tolower...");
-    start();
+    benchmark_start();
     for( i=0; i<no_iter; ++i )
     {
-        pause();
+        benchmark_pause();
         len = randomize(buffer, BUFF_SIZE);
-        unpause();
+        benchmark_unpause();
         slicker_tolower(buffer, buffer, len);
     };
-    stop();
+    benchmark_stop();
 
     /* naive_tolower: */
     puts("Timing naive tolower...");
-    start();
+    benchmark_start();
     for( i=0; i<no_iter; ++i )
     {
-        pause();
+        benchmark_pause();
         len = randomize(buffer, BUFF_SIZE);
-        unpause();
+        benchmark_unpause();
         naive_tolower(buffer, buffer, len);
     };
-    stop();
+    benchmark_stop();
     return 0;
 };
 
