@@ -21,12 +21,12 @@ void timeval_subtract(
         struct timeval* result, struct timeval* start, struct timeval* end)
 {
     result->tv_sec = end->tv_sec - start->tv_sec;
-    if( end->tv_usec > start->tv_usec ) {
+    if( end->tv_usec >= start->tv_usec ) {
         result->tv_usec = end->tv_usec - start->tv_usec;
     }
     else {
         result->tv_sec -= 1;
-        result->tv_usec = (USEC_PER_SEC - end->tv_usec) + start->tv_usec;
+        result->tv_usec = (USEC_PER_SEC - start->tv_usec) + end->tv_usec;
     };
     return;
 }
@@ -66,10 +66,6 @@ static inline void benchmark_unpause()
     static struct timeval total_pause;
     gettimeofday(&unpause_time, NULL);
     timeval_subtract(&total_pause, &pause_time, &unpause_time);
-#if 0
-    printf("pause time: %lu.%06lus\n",
-        (long)total_pause.tv_sec, (long)total_pause.tv_usec);
-#endif
     timeval_increment(&start_time, &total_pause);
     return;
 };
