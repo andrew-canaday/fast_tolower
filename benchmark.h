@@ -71,14 +71,12 @@ static inline void benchmark_unpause()
 };
 
 /* Stop the timer and spit out the total elapsed time: */
-static inline void benchmark_stop()
+static inline struct timeval benchmark_stop()
 {
     static struct timeval total_time;
     gettimeofday(&stop_time, NULL);
     timeval_subtract(&total_time, &start_time, &stop_time);
-    printf("Total time: %lu.%06lus\n",
-        (long)total_time.tv_sec, (long)total_time.tv_usec);
-    return;
+    return total_time;
 }
 
 #endif /* FAST_TOLOWER_BENCHMARK_H */
