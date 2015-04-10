@@ -11,9 +11,14 @@
 #include <stdint.h>
 #include <string.h>
 #include <ctype.h>
+#include "benchmark.h"
 
 /* The fast version is CHUNKY and live separately from the benchmark here: */
 #include "fast_tolower.h"
+
+#ifndef DEFAULT_NO_ITERATIONS
+#define DEFAULT_NO_ITERATIONS 250000
+#endif /* DEFAULT_NO_ITERATIONS */
 
 #ifndef BUFF_SIZE
 #define BUFF_SIZE 512
@@ -50,48 +55,6 @@ static void slicker_tolower( char* dst, const char* src, size_t len)
     return;
 };
 
-/*========================================*
- *==- Ugly timing stuff for profiling: -==*
- *========================================*/
-
-/* The timeing stuff was all stolen, ALMOST VERBATIM, from:
- * http://stackoverflow.com/questions/16764276/measuring-time-in-millisecond-precision
- */
-static struct timeval tm1;
-static struct timeval pausetime;
-
-/* Start timing an algorithm: */
-static inline void start()
-{
-    gettimeofday(&tm1, NULL);
-}
-
-/* Pause the timer, don't count any time elapsed between pause and unpause: */
-static inline void pause()
-{
-    gettimeofday(&pausetime, NULL);
-}
-
-/* Unpause the timer: */
-static inline void unpause()
-{
-    struct timeval tm2;
-    gettimeofday(&tm2, NULL);
-    tm1.tv_usec += (tm2.tv_usec - pausetime.tv_usec);
-    tm1.tv_sec += (tm2.tv_sec - pausetime.tv_sec);
-};
-
-/* Stop the timer and spit out the total elapsed time: */
-static inline void stop()
-{
-    struct timeval tm2;
-    gettimeofday(&tm2, NULL);
-
-    unsigned long long t = 1000 * (tm2.tv_sec - tm1.tv_sec) + \
-                            (tm2.tv_usec - tm1.tv_usec) / 1000;
-    fprintf(stderr, "%llu ms\n", t);
-}
-
 /* Used to generate a random character string: */
 size_t randomize(char* buffer, size_t len)
 {
@@ -109,52 +72,64 @@ size_t randomize(char* buffer, size_t len)
 int main( int argc, char** argv )
 {
     int i;
-    int no_iter = 100000;
+    int no_iter = DEFAULT_NO_ITERATIONS;
     char buffer[BUFF_SIZE];
     size_t len;
+    struct timeval benchmark_time;
 
     if( argc > 1 ) {
         no_iter = atoi(argv[1]);
     };
 
+    puts("\nRunning test with:");
+    printf("\tMax string length: %i\n", BUFF_SIZE);
+    printf("\tNumber of iterations: %i\n", no_iter);
+
     /* Get some random stuff: */
     srand(time(NULL));
 
     /* fast_tolower: */
-    puts("Timing fast tolower...");
-    start();
+    printf("%s", "Timing fast tolower...");
+    benchmark_start();
     for( i=0; i<no_iter; ++i )
     {
-        pause();
+        benchmark_pause();
         len = randomize(buffer, BUFF_SIZE);
-        unpause();
+        benchmark_unpause();
         fast_tolower(buffer, buffer, len);
     };
-    stop();
+    benchmark_time = benchmark_stop();
+    printf("%lu.%06lus\n",
+        (long)benchmark_time.tv_sec, (long)benchmark_time.tv_usec);
   
     /* slicker_tolower: */
-    puts("Timing slicker tolower...");
-    start();
+    printf("%s", "Timing slicker tolower...");
+    benchmark_start();
     for( i=0; i<no_iter; ++i )
     {
-        pause();
+        benchmark_pause();
         len = randomize(buffer, BUFF_SIZE);
-        unpause();
+        benchmark_unpause();
         slicker_tolower(buffer, buffer, len);
     };
-    stop();
+    benchmark_time = benchmark_stop();
+    printf("%lu.%06lus\n",
+        (long)benchmark_time.tv_sec, (long)benchmark_time.tv_usec);
 
     /* naive_tolower: */
-    puts("Timing naive tolower...");
-    start();
+    printf("%s", "Timing naive tolower...");
+    benchmark_start();
     for( i=0; i<no_iter; ++i )
     {
-        pause();
+        benchmark_pause();
         len = randomize(buffer, BUFF_SIZE);
-        unpause();
+        benchmark_unpause();
         naive_tolower(buffer, buffer, len);
     };
-    stop();
+    benchmark_time = benchmark_stop();
+    printf("%lu.%06lus\n",
+        (long)benchmark_time.tv_sec, (long)benchmark_time.tv_usec);
+
     return 0;
 };
 
