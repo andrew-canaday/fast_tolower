@@ -162,9 +162,9 @@
     typedef uint32_t stride_t;
 #elif FAST_TOLOWER_STRIDE == 2
     /* 16 bit systems */
-    #define MASK_S 0x20
-    #define LOW_S 0x40
-    #define HIGH_S 0x5a
+    #define MASK_S 0x2020
+    #define LOW_S 0x4040
+    #define HIGH_S 0x5a5a
     typedef uint16_t stride_t;
 #endif /* STRIDE_8 */
 

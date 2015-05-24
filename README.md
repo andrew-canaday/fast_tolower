@@ -22,7 +22,7 @@ be set, but we *don't care*).
 
 Next, we observe that the difference between upper and lowercase ascii
 characters is (conveniently!) 32, i.e. a lowercase letter is equal to
-its uppercase equivalent with the 6th bit set (e.g. ```'a' = 'A' | 0x20```).
+its uppercase equivalent with the 6th bit set (e.g. ```'a' == 'A' | 0x20```).
 
 Using these two observations, we can flip an uppercase letter to lowercase
 without branching, like so:
