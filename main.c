@@ -88,20 +88,20 @@ int main( int argc, char** argv )
     /* Get some random stuff: */
     srand(time(NULL));
 
-    /* fast_tolower: */
-    printf("%s", "Timing fast tolower...");
+    /* naive_tolower: */
+    printf("%s", "Timing naive tolower...");
     benchmark_start();
     for( i=0; i<no_iter; ++i )
     {
         benchmark_pause();
         len = randomize(buffer, BUFF_SIZE);
         benchmark_unpause();
-        fast_tolower(buffer, buffer, len);
+        naive_tolower(buffer, buffer, len);
     };
     benchmark_time = benchmark_stop();
     printf("%lu.%06lus\n",
         (long)benchmark_time.tv_sec, (long)benchmark_time.tv_usec);
-  
+
     /* slicker_tolower: */
     printf("%s", "Timing slicker tolower...");
     benchmark_start();
@@ -116,15 +116,15 @@ int main( int argc, char** argv )
     printf("%lu.%06lus\n",
         (long)benchmark_time.tv_sec, (long)benchmark_time.tv_usec);
 
-    /* naive_tolower: */
-    printf("%s", "Timing naive tolower...");
+    /* fast_tolower: */
+    printf("%s", "Timing fast tolower...");
     benchmark_start();
     for( i=0; i<no_iter; ++i )
     {
         benchmark_pause();
         len = randomize(buffer, BUFF_SIZE);
         benchmark_unpause();
-        naive_tolower(buffer, buffer, len);
+        fast_tolower(buffer, buffer, len);
     };
     benchmark_time = benchmark_stop();
     printf("%lu.%06lus\n",

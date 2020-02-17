@@ -7,19 +7,19 @@
  * --------
  *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2015 Andrew T. Canaday
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
  * deal in the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
  * sell copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -166,7 +166,13 @@
     #define LOW_S 0x4040
     #define HIGH_S 0x5a5a
     typedef uint16_t stride_t;
-#endif /* STRIDE_8 */
+#elif FAST_TOLOWER_STRIDE == 1
+    /* 16 bit systems */
+    #define MASK_S 0x20
+    #define LOW_S 0x40
+    #define HIGH_S 0x5a
+    typedef uint8_t stride_t;
+#endif /* FAST_TOLOWER_STRIDE */
 
 /* Mask, high, low for single byte stride (arch-independent): */
 #define MASK 0x20
@@ -205,21 +211,21 @@ static void fast_tolower( char* dst, const char* src, size_t len)
     char c;
 
     /* Iterate byte-by-byte until we achieve proper alignment for stride_t: */
-    switch( align ) { 
-    #if FAST_TOLOWER_STRIDE == 8 
-        case 7: FAST_CHAR_TOLOWER(dst, src, c, mask) 
-        case 6: FAST_CHAR_TOLOWER(dst, src, c, mask) 
-        case 5: FAST_CHAR_TOLOWER(dst, src, c, mask) 
-        case 4: FAST_CHAR_TOLOWER(dst, src, c, mask) 
-    #endif /* FAST_TOLOWER_STRIDE == 8 */ 
-    #if FAST_TOLOWER_STRIDE >= 4 
-        case 3: FAST_CHAR_TOLOWER(dst, src, c, mask) 
-        case 2: FAST_CHAR_TOLOWER(dst, src, c, mask) 
-    #endif /* FAST_TOLOWER_STRIDE >= 4 */ 
-        case 1: FAST_CHAR_TOLOWER(dst, src, c, mask) 
-        case 0: 
-        default: 
-            break; 
+    switch( align ) {
+    #if FAST_TOLOWER_STRIDE == 8
+        case 7: FAST_CHAR_TOLOWER(dst, src, c, mask)
+        case 6: FAST_CHAR_TOLOWER(dst, src, c, mask)
+        case 5: FAST_CHAR_TOLOWER(dst, src, c, mask)
+        case 4: FAST_CHAR_TOLOWER(dst, src, c, mask)
+    #endif /* FAST_TOLOWER_STRIDE == 8 */
+    #if FAST_TOLOWER_STRIDE >= 4
+        case 3: FAST_CHAR_TOLOWER(dst, src, c, mask)
+        case 2: FAST_CHAR_TOLOWER(dst, src, c, mask)
+    #endif /* FAST_TOLOWER_STRIDE >= 4 */
+        case 1: FAST_CHAR_TOLOWER(dst, src, c, mask)
+        case 0:
+        default:
+            break;
     };
 
     /* Now iterate over the characters at the maximum stride possible: */
@@ -231,25 +237,25 @@ static void fast_tolower( char* dst, const char* src, size_t len)
         mask_s = (((LOW_S - c_s) ^ (HIGH_S - c_s)) >> 1) & MASK_S;
         *dst_s++ = c_s ^ mask_s;
     };
-    
+
     /* Convert remaining characters individually: */
     src = ((const char*)src_s);
     dst = ((char*)dst_s);
-    switch( remain ) { 
-    #if FAST_TOLOWER_STRIDE == 8 
-        case 7: FAST_CHAR_TOLOWER(dst, src, c, mask) 
-        case 6: FAST_CHAR_TOLOWER(dst, src, c, mask) 
-        case 5: FAST_CHAR_TOLOWER(dst, src, c, mask) 
-        case 4: FAST_CHAR_TOLOWER(dst, src, c, mask) 
-    #endif /* FAST_TOLOWER_STRIDE == 8 */ 
-    #if FAST_TOLOWER_STRIDE >= 4 
-        case 3: FAST_CHAR_TOLOWER(dst, src, c, mask) 
-        case 2: FAST_CHAR_TOLOWER(dst, src, c, mask) 
-    #endif /* FAST_TOLOWER_STRIDE >= 4 */ 
-        case 1: FAST_CHAR_TOLOWER(dst, src, c, mask) 
-        case 0: 
-        default: 
-            break; 
+    switch( remain ) {
+    #if FAST_TOLOWER_STRIDE == 8
+        case 7: FAST_CHAR_TOLOWER(dst, src, c, mask)
+        case 6: FAST_CHAR_TOLOWER(dst, src, c, mask)
+        case 5: FAST_CHAR_TOLOWER(dst, src, c, mask)
+        case 4: FAST_CHAR_TOLOWER(dst, src, c, mask)
+    #endif /* FAST_TOLOWER_STRIDE == 8 */
+    #if FAST_TOLOWER_STRIDE >= 4
+        case 3: FAST_CHAR_TOLOWER(dst, src, c, mask)
+        case 2: FAST_CHAR_TOLOWER(dst, src, c, mask)
+    #endif /* FAST_TOLOWER_STRIDE >= 4 */
+        case 1: FAST_CHAR_TOLOWER(dst, src, c, mask)
+        case 0:
+        default:
+            break;
     };
 };
 
