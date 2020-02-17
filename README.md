@@ -17,12 +17,12 @@ So there's this weird trick we can do to determine if a single 8-bit value
 (Disclaimer: first made aware of this trick [here](http://codegolf.stackexchange.com/questions/36425/convert-to-uppercase-and-lowercase-without-branching-and-comparisons))
 
 After performing this trick, we have the property that the top bit of the
-resulting number will be set if ```LOW <= c <= HIGH``` (other bits may *also*
+resulting number will be set if `LOW <= c <= HIGH` (other bits may *also*
 be set, but we *don't care*).
 
 Next, we observe that the difference between upper and lowercase ascii
 characters is (conveniently!) 32, i.e. a lowercase letter is equal to
-its uppercase equivalent with the 6th bit set (e.g. ```'a' == 'A' | 0x20```).
+its uppercase equivalent with the 6th bit set (e.g. `'a' == 'A' | 0x20`).
 
 Using these two observations, we can flip an uppercase letter to lowercase
 without branching, like so:
@@ -99,6 +99,26 @@ Notes, Issues, and Disclaimers
  * This has likely been done before many times over by many different engineers
  * This may not be portable
  * This is not extensively tested
+
+Benchmark
+---------
+
+```sh
+# 64-bit systems:
+gcc -DFAST_TOLOWER_STRIDE=8 ./main.c -o benchmark_tolower
+
+# 32-bit systems:
+gcc -DFAST_TOLOWER_STRIDE=4 ./main.c -o benchmark_tolower
+
+# (default) 32-bit systems:
+gcc ./main.c -o benchmark_tolower
+
+# 16-bit systems:
+gcc -DFAST_TOLOWER_STRIDE=2 ./main.c -o benchmark_tolower
+
+# 8-bit systems:
+gcc -DFAST_TOLOWER_STRIDE=1 ./main.c -o benchmark_tolower
+```
 
 LICENSE
 -------
