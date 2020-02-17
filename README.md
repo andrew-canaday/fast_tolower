@@ -104,20 +104,26 @@ Benchmark
 ---------
 
 ```sh
+# Build with platform-native width (or default to 32-bit):
+make benchmark
+
+# A more fair comparison with proper architecture and compiler optimization:
+CFLAGS="-march=native -O3" make benchmark
+```
+
+## Specifying Stride Width
+```sh
 # 64-bit systems:
-gcc -DFAST_TOLOWER_STRIDE=8 ./main.c -o benchmark_tolower
+CFLAGS="-DFAST_TOLOWER_STRIDE=8" make benchmark
 
 # 32-bit systems:
-gcc -DFAST_TOLOWER_STRIDE=4 ./main.c -o benchmark_tolower
-
-# (default) 32-bit systems:
-gcc ./main.c -o benchmark_tolower
+CFLAGS="-DFAST_TOLOWER_STRIDE=4" make benchmark
 
 # 16-bit systems:
-gcc -DFAST_TOLOWER_STRIDE=2 ./main.c -o benchmark_tolower
+CFLAGS="-DFAST_TOLOWER_STRIDE=2" make benchmark
 
 # 8-bit systems:
-gcc -DFAST_TOLOWER_STRIDE=1 ./main.c -o benchmark_tolower
+CFLAGS="-DFAST_TOLOWER_STRIDE=1" make benchmark
 ```
 
 LICENSE
