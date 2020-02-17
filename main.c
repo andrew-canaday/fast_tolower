@@ -13,8 +13,12 @@
 #include <ctype.h>
 #include "benchmark.h"
 
-/* The fast version is CHUNKY and live separately from the benchmark here: */
+/* The fast version is CHUNKY and lives separately from the benchmark here: */
+#if defined(FAST_TOLOWER_SIMD) && (FAST_TOLOWER_SIMD==1)
+#include "simd_tolower.h"
+#else
 #include "fast_tolower.h"
+#endif /* FAST_TOLOWER_SIMD */
 
 #ifndef DEFAULT_NO_ITERATIONS
 #define DEFAULT_NO_ITERATIONS 250000
@@ -56,16 +60,23 @@ static void slicker_tolower( char* dst, const char* src, size_t len)
 };
 
 /* Used to generate a random character string: */
-size_t randomize(char* buffer, size_t len)
+size_t randomize_buffer(char* buffer, size_t len)
 {
-    size_t no_chars = (size_t)rand() % (len-1);
+    size_t no_chars = len-1;
     size_t i;
     for( i=0; i<no_chars; ++i )
     {
-        buffer[i] = rand() % 0x100;
+        buffer[i] = rand() % ('Z' - 'A' + 1) + 'A';
     };
     buffer[no_chars] = '\0';
     return no_chars;
+};
+
+/* Used to generate a random character string: */
+size_t randomize(char* buffer, size_t len)
+{
+    size_t no_chars = ((size_t)rand() % (len/2)) + (len/4);
+    return randomize_buffer(buffer, no_chars);
 };
 
 /* Actually benchmark our functions: */
@@ -82,8 +93,8 @@ int main( int argc, char** argv )
     };
 
     puts("\nRunning test with:");
-    printf("\tMax string length: %i\n", BUFF_SIZE);
-    printf("\tNumber of iterations: %i\n", no_iter);
+    printf("    Max string length: %i\n", BUFF_SIZE);
+    printf("    Number of iterations: %i\n", no_iter);
 
     /* Get some random stuff: */
     srand(time(NULL));
@@ -103,7 +114,7 @@ int main( int argc, char** argv )
         (long)benchmark_time.tv_sec, (long)benchmark_time.tv_usec);
 
     /* slicker_tolower: */
-    printf("%s", "Timing slicker tolower...");
+    printf("%s", "Timing slicker_tolower...");
     benchmark_start();
     for( i=0; i<no_iter; ++i )
     {
@@ -130,6 +141,19 @@ int main( int argc, char** argv )
     printf("%lu.%06lus\n",
         (long)benchmark_time.tv_sec, (long)benchmark_time.tv_usec);
 
+    /* naive_tolower: */
+    len = randomize_buffer(buffer, 32);
+    puts("\nResults (naive_tolower):");
+    printf("    before: %s\n", buffer);
+    naive_tolower(buffer, buffer, len);
+    printf("    after:  %s\n", buffer);
+
+    /* fast_tolower: */
+    len = randomize_buffer(buffer, 32);
+    puts("\nResults (fast_tolower):");
+    printf("    before: %s\n", buffer);
+    fast_tolower(buffer, buffer, len);
+    printf("    after:  %s\n", buffer);
     return 0;
 };
 
