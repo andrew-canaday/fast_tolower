@@ -122,23 +122,20 @@
  * Attempt a best guess for maximum stride, if unspecified:
  *---------------------------------------------------------------------------*/
 #ifndef FAST_TOLOWER_STRIDE
-#ifdef SIZEOF_SIZE_T
-/* Use autoconfg setting if sizeof(size_t) was found via:
- * AC_CHECK_SIZEOF([size_t])
- * AC_SUBST([SIZEOF_SIZE_T])
- */
-#define FAST_TOLOWER_STRIDE SIZEOF_SIZE_T
-#else
-/* Clang lies about being GCC, so look for clang too! */
-#if defined(__GNUC__) && !defined(__clang__)
-/* Otherwise, use __SIZE_TYPE__ if we have GCC: */
-#define FAST_TOLOWER_STRIDE __SIZE_TYPE__
-#else
-/* Otherwise, use the safest guess (32bit): */
-#warning "Unable to determine architecture! FAST_TOLOWER_STRIDE = 4 (default)."
-#define FAST_TOLOWER_STRIDE 4
-#endif /* __GNUC__ */
-#endif /* SIZEOF_SIZE_T */
+    #if defined(SIZEOF_SIZE_T)
+        /* Use autoconfg setting if sizeof(size_t) was found via:
+         * AC_CHECK_SIZEOF([size_t])
+         * AC_SUBST([SIZEOF_SIZE_T])
+         */
+        #define FAST_TOLOWER_STRIDE SIZEOF_SIZE_T
+    #elif defined(__SIZEOF_SIZE_T__)
+        /* Otherwise, use __SIZE_TYPE__: */
+        #define FAST_TOLOWER_STRIDE __SIZEOF_SIZE_T__
+    #else
+        /* Otherwise, use the safest guess (32bit): */
+        #warning "Unable to determine architecture! FAST_TOLOWER_STRIDE = 4 (default)."
+        #define FAST_TOLOWER_STRIDE 4
+    #endif /* SIZEOF_SIZE_T */
 #endif /* FAST_TOLOWER_STRIDE */
 /*---------------------------------------------------------------------------*/
 
