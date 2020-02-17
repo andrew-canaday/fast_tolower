@@ -95,6 +95,7 @@ int main( int argc, char** argv )
     puts("\nRunning test with:");
     printf("    Max string length: %i\n", BUFF_SIZE);
     printf("    Number of iterations: %i\n", no_iter);
+    printf("    Stride: %i bytes\n", FAST_TOLOWER_STRIDE);
 
     /* Get some random stuff: */
     srand(time(NULL));
