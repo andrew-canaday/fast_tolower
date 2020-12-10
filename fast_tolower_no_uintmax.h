@@ -32,14 +32,27 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-/* A modified version of Hallvard B. Furuseth's IMAX_BITS which, given the
- * maximum value for a given type, yields the types width, in bytes:
- */
-#define WIDTH_FROM_MAX_VAL(m) (((m)/((m)%255+1) / 255%255*8 + 7-86/((m)%255+12)) >> 3)
-
-#define FAST_TOLOWER_STRIDE WIDTH_FROM_MAX_VAL(UINTMAX_MAX)
-
+/*---------------------------------------------------------------------------*
+ * Attempt a best guess for maximum stride, if unspecified:
+ *---------------------------------------------------------------------------*/
+#ifndef FAST_TOLOWER_STRIDE
+    #if defined(SIZEOF_SIZE_T)
+        /* Use autoconfg setting if sizeof(size_t) was found via:
+         * AC_CHECK_SIZEOF([size_t])
+         * AC_SUBST([SIZEOF_SIZE_T])
+         */
+        #define FAST_TOLOWER_STRIDE SIZEOF_SIZE_T
+    #elif defined(__SIZEOF_SIZE_T__)
+        /* Otherwise, use __SIZE_TYPE__: */
+        #define FAST_TOLOWER_STRIDE __SIZEOF_SIZE_T__
+    #else
+        /* Otherwise, use the safest guess (32bit): */
+        #warning "Unable to determine architecture! FAST_TOLOWER_STRIDE = 4 (default)."
+        #define FAST_TOLOWER_STRIDE 4
+    #endif /* SIZEOF_SIZE_T */
+#endif /* FAST_TOLOWER_STRIDE */
 /*---------------------------------------------------------------------------*/
+
 
 /*---------------------------------------------------------------------------*
  * Set mask, high, and low values for max stride.
@@ -48,24 +61,28 @@
  *---------------------------------------------------------------------------*/
 #if FAST_TOLOWER_STRIDE == 8
     /* 64 bit systems */
-    #define MASK_S UINTMAX_C(0x2020202020202020)
-    #define LOW_S UINTMAX_C(0x4040404040404040)
-    #define HIGH_S UINTMAX_C(0x5a5a5a5a5a5a5a5a)
+    #define MASK_S 0x2020202020202020
+    #define LOW_S 0x4040404040404040
+    #define HIGH_S 0x5a5a5a5a5a5a5a5a
+    typedef uint64_t stride_t;
 #elif FAST_TOLOWER_STRIDE == 4
     /* 32 bit systems */
-    #define MASK_S UINTMAX_C(0x20202020)
-    #define LOW_S UINTMAX_C(0x40404040)
-    #define HIGH_S UINTMAX_C(0x5a5a5a5a)
+    #define MASK_S 0x20202020
+    #define LOW_S 0x40404040
+    #define HIGH_S 0x5a5a5a5a
+    typedef uint32_t stride_t;
 #elif FAST_TOLOWER_STRIDE == 2
     /* 16 bit systems */
-    #define MASK_S UINTMAX_C(0x2020)
-    #define LOW_S UINTMAX_C(0x4040)
-    #define HIGH_S UINTMAX_C(0x5a5a)
+    #define MASK_S 0x2020
+    #define LOW_S 0x4040
+    #define HIGH_S 0x5a5a
+    typedef uint16_t stride_t;
 #elif FAST_TOLOWER_STRIDE == 1
     /* 8 bit systems */
-    #define MASK_S UINTMAX_C(0x20)
-    #define LOW_S UINTMAX_C(0x40)
-    #define HIGH_S UINTMAX_C(0x5a)
+    #define MASK_S 0x20
+    #define LOW_S 0x40
+    #define HIGH_S 0x5a
+    typedef uint8_t stride_t;
 #endif /* FAST_TOLOWER_STRIDE */
 
 /* Mask, high, low for single byte stride (arch-independent): */
@@ -91,20 +108,20 @@ static void fast_tolower( char* dst, const char* src, size_t len)
 
     /* Number of single byte chunks to arrive at proper alignment: */
     size_t align = ((FAST_TOLOWER_STRIDE) - \
-            ((uintmax_t)(src) % FAST_TOLOWER_STRIDE)) % FAST_TOLOWER_STRIDE;
+            ((stride_t)(src) % FAST_TOLOWER_STRIDE)) % FAST_TOLOWER_STRIDE;
 
     /* Number of single byte chunks after main no_iter is done: */
     size_t remain = (len % FAST_TOLOWER_STRIDE) - align;
 
-    const uintmax_t* src_s;
-    uintmax_t* dst_s;
+    const stride_t* src_s;
+    stride_t* dst_s;
     size_t i;
-    uintmax_t mask_s;
-    uintmax_t c_s;
+    stride_t mask_s;
+    stride_t c_s;
     uint8_t mask;
     char c;
 
-    /* Iterate byte-by-byte until we achieve proper alignment for uintmax_t: */
+    /* Iterate byte-by-byte until we achieve proper alignment for stride_t: */
     switch( align ) {
     #if FAST_TOLOWER_STRIDE == 8
         case 7: FAST_CHAR_TOLOWER(dst, src, c, mask)
@@ -123,8 +140,8 @@ static void fast_tolower( char* dst, const char* src, size_t len)
     };
 
     /* Now iterate over the characters at the maximum stride possible: */
-    src_s = (const uintmax_t*)src;
-    dst_s = (uintmax_t*)dst;
+    src_s = (const stride_t*)src;
+    dst_s = (stride_t*)dst;
     for( i=0; i<no_iter; ++i )
     {
         c_s = *src_s++;

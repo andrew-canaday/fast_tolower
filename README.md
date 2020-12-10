@@ -93,15 +93,11 @@ the computation by iterating over the remaining bytes (if any) byte-by-bye
 once more.
 
 
-Notes, Issues, and Disclaimers
-------------------------------
-
- * This has likely been done before many times over by many different engineers
- * This may not be portable
- * This is not extensively tested
-
 Benchmark
 ---------
+
+This repo includes a cobbled-together toy benchmarking program which can be
+compiled and run, like so:
 
 ```sh
 # Build with platform-native width (or default to 32-bit):
@@ -109,21 +105,6 @@ make benchmark
 
 # A more fair comparison with proper architecture and compiler optimization:
 CFLAGS="-march=native -O3" make benchmark
-```
-
-## Specifying Stride Width
-```sh
-# 64-bit systems:
-CFLAGS="-DFAST_TOLOWER_STRIDE=8" make benchmark
-
-# 32-bit systems:
-CFLAGS="-DFAST_TOLOWER_STRIDE=4" make benchmark
-
-# 16-bit systems:
-CFLAGS="-DFAST_TOLOWER_STRIDE=2" make benchmark
-
-# 8-bit systems:
-CFLAGS="-DFAST_TOLOWER_STRIDE=1" make benchmark
 ```
 
 LICENSE
