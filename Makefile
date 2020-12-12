@@ -1,18 +1,19 @@
 # Simple makefile for fast_tolower algorithm test.
-CFLAGS ?= -O3 -Wall
+CFLAGS ?= -O3 -Wall -Wno-format
+SUFFIX ?= 
 
-.PHONY: all benchmark clean
+.PHONY: all check clean
 
-all: benchmark
+all: check
 
-benchmark_tolower: main.c fast_tolower.h benchmark.h
-	gcc $(CFLAGS) ./main.c -o benchmark_tolower
+benchmark: main.c fast_tolower.h benchmark.h
+	gcc $(CFLAGS) ./main.c -o benchmark$(SUFFIX)
 
-benchmark: benchmark_tolower
-	./benchmark_tolower
+check: benchmark
+	./benchmark$(SUFFIX)
 
 clean:
-	rm -vf *.o ./benchmark_tolower
+	rm -vf *.o ./benchmark
 
 # EOF
 

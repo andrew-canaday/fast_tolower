@@ -79,7 +79,7 @@ A Note on Alignment
 
 Simply converting the input string pointers to integer pointer types is the
 obvious approach. However, on architectures with *strict alignment* this may
-cause the program *to abort*. Many modern systems will allow you to voilate
+cause the program *to abort*. Many modern systems will allow you to violate
 strict alignment rules, but as a result the machine generates extra
 instructions to shift data across word boundaries before the computations
 are performed.
@@ -104,7 +104,13 @@ compiled and run, like so:
 make benchmark
 
 # A more fair comparison with proper architecture and compiler optimization:
-CFLAGS="-march=native -O3" make benchmark
+CFLAGS="-march=native -O3" make check
+
+# Build for a range of strides and test each:
+FAST_CFLAGS="-O3 -Wall -Wno-format"
+for s in 1 2 4 8 ; do
+  CFLAGS="${FAST_CFLAGS} -DFAST_TOLOWER_STRIDE=$s" SUFFIX="$s" make check
+done
 ```
 
 LICENSE
