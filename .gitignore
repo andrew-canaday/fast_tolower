@@ -1,3 +1,4 @@
-benchmark_tolower
+benchmark
+benchmark_*
 *.swp
 *.o
