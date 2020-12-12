@@ -25,7 +25,7 @@
 #endif /* DEFAULT_NO_ITERATIONS */
 
 #ifndef BUFF_SIZE
-#define BUFF_SIZE 512
+#define BUFF_SIZE 607
 #endif /* BUFF_SIZE */
 
 /* This is your typical naive implementation of full-string tolower, using the
@@ -95,7 +95,7 @@ int main( int argc, char** argv )
     puts("\nRunning test with:");
     printf("    Max string length: %i\n", BUFF_SIZE);
     printf("    Number of iterations: %i\n", no_iter);
-    printf("    Stride: %i bytes\n", FAST_TOLOWER_STRIDE);
+    printf("    Stride: %lu bytes\n", FAST_TOLOWER_STRIDE);
 
     /* Get some random stuff: */
     srand(time(NULL));
