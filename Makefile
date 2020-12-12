@@ -5,7 +5,7 @@ SUFFIX ?=
 
 .PHONY: all check clean
 
-all: check
+all: benchmark
 
 benchmark: main.c fast_tolower.h benchmark.h
 	$(CC) $(CFLAGS) ./main.c -o benchmark$(SUFFIX)
