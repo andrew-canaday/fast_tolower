@@ -107,7 +107,7 @@ make benchmark
 CFLAGS="-march=native -O3" make check
 
 # Build for a range of strides and test each:
-FAST_CFLAGS="-O3 -Wall -Wno-format"
+FAST_CFLAGS="-O3 -Wall -Wno-format -march=native"
 for s in 1 2 4 8 ; do
   CFLAGS="${FAST_CFLAGS} -DFAST_TOLOWER_STRIDE=$s" SUFFIX="$s" make check
 done
