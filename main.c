@@ -41,10 +41,8 @@ static void naive_tolower( char* dst, const char* src, size_t len)
 };
 
 
-/* This is a slightly slicker tolower implementation which uses a neato trick
- * to determine if a character lies on the interval [0x60, 0x5a] without
- * branching and conditionally sets the 0x20 bit if lowercase (see the comments
- * in fast_tolower.h, if you want a comprehensive breakdown: */
+/* This is a slightly slicker tolower implementation which the trick described
+ * in the README, but only does one byte at a time. */
 static void slicker_tolower( char* dst, const char* src, size_t len)
 {
     size_t i;
@@ -53,7 +51,7 @@ static void slicker_tolower( char* dst, const char* src, size_t len)
     for( i=0; i<len; ++i )
     {
         c = src[i];
-        m = (((0x40-c) ^ (0x5a-c)) >> 1) & 0x20;
+        m = (((0x40-c) ^ (0x5a-c)) >> 2) & 0x20;
         dst[i] = c ^ m;
     };
     return;

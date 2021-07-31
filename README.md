@@ -17,7 +17,7 @@ So there's this weird trick we can do to determine if a single 8-bit value
 (Disclaimer: first made aware of this trick [here](http://codegolf.stackexchange.com/questions/36425/convert-to-uppercase-and-lowercase-without-branching-and-comparisons))
 
 After performing this trick, we have the property that the top bit of the
-resulting number will be set if `LOW <= c <= HIGH` (other bits may *also*
+resulting number will be set if `LOW < c <= HIGH` (other bits may *also*
 be set, but we *don't care*).
 
 Next, we observe that the difference between upper and lowercase ascii
@@ -31,11 +31,11 @@ without branching, like so:
 /* Set c to some character value: */
 char c = 'D'; // Any value works!
 
-/* Here, the top bit is set if 0x40 ('A') <= c <= 0x5a ('Z')
- * We shift one place to the right so that we can leverage the bit
+/* Here, the top bit is set if 0x40 ('A'-1) < c <= 0x5a ('Z')
+ * We shift two places to the right so that we can leverage the bit
  * that's been conditionally set as a case-toggle and mask using 0x20
  * because we don't *care* about any of the other bits set in the XOR: */
-uint8_t mask = (((0x40 - c) ^ (0x5a - c)) >> 1) & 0x20;
+uint8_t mask = (((0x40 - c) ^ (0x5a - c)) >> 2) & 0x20;
 
 /* Now, we conditionally flip the 6th bit - changing to lowercase! */
 c = c ^ mask;
@@ -60,7 +60,7 @@ we cant test 2, 4, or 8 characters at a time, e.g.:
 uint16_t c2 = 'B' | (uint16_t)('A' << 8);
 
 /* Perform the same trick at 16-bits: */
-uint16_t mask = (((0x4040 - c2) ^ (0x5a5a - c2)) >> 1) & 0x2020;
+uint16_t mask = (((0x4040 - c2) ^ (0x5a5a - c2)) >> 2) & 0x2020;
 c2 = c ^ mask;
 ```
 

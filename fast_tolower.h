@@ -110,7 +110,7 @@
  * to make an already-ugly function slightly more readable: */
 #define FAST_CHAR_TOLOWER(dst, src, tmp, mask) \
             tmp = *src++; \
-            mask = (((LOW - tmp) ^ (HIGH - tmp)) >> 1) & MASK; \
+            mask = (((LOW - tmp) ^ (HIGH - tmp)) >> 2) & MASK; \
             *dst++ = tmp ^ mask;
 
 
@@ -161,7 +161,7 @@ static void fast_tolower( char* dst, const char* src, size_t len)
     for( i=0; i<no_iter; ++i )
     {
         c_s = *src_s++;
-        mask_s = (((LOW_S - c_s) ^ (HIGH_S - c_s)) >> 1) & MASK_S;
+        mask_s = (((LOW_S - c_s) ^ (HIGH_S - c_s)) >> 2) & MASK_S;
         *dst_s++ = c_s ^ mask_s;
     };
 
